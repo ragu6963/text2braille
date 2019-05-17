@@ -1,10 +1,12 @@
 #include <Streaming.h>
 #include <string.h>
 
+int check_btn = 8;
+
 String input_str, braille;
 bool first_out[24] = {0};
 bool second_out[24] = {0};
-int cnt, str_len, letter_division_index;
+int cnt, str_len, letter_division_index; 
 void power();
 void __init__()
 {
@@ -38,6 +40,7 @@ void setup()
   pinMode(4, OUTPUT); // LED 연결
   pinMode(5, OUTPUT); // LED 연결
   pinMode(6, OUTPUT); // LED 연결
+  pinMode(check_btn, INPUT_PULLUP); // LED 연결
 } 
 void loop()
 {
@@ -162,9 +165,14 @@ void loop()
       // for (int i = 0; i < 24; i++)
       //   Serial << second_out[i] << " ";
       // Serial << endl;
-      power(); 
-      delay(2000); 
-      Serial<<"1"<<endl; 
+      power();   
+      while(1){
+        if(digitalRead(check_btn) == LOW){  
+          Serial<<"1"<<endl; 
+          delay(1000);
+          break;
+        }         
+      } 
     }
     //정상적인 데이터 끝
     else
@@ -175,7 +183,7 @@ void loop()
   //  통신 끝
 } 
 void power()
-{
+{ 
   if (first_out[0] == 1)
   {
     digitalWrite(2, HIGH);
