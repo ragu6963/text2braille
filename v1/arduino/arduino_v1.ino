@@ -1,7 +1,8 @@
 #include <Streaming.h>
 #include <string.h>
 
-int check_btn = 8;
+int check_btn = 2;
+int led = 52;
 
 String input_str, braille;
 bool first_out[24] = {0};
@@ -34,12 +35,7 @@ void convert_int(String braille, bool out[])
 void setup()
 {
   Serial.begin(9600);
-  pinMode(7, OUTPUT); // LED 연결
-  pinMode(2, OUTPUT); // LED 연결
-  pinMode(3, OUTPUT); // LED 연결
-  pinMode(4, OUTPUT); // LED 연결
-  pinMode(5, OUTPUT); // LED 연결
-  pinMode(6, OUTPUT); // LED 연결
+  pinMode(led, OUTPUT); // LED 연결
   pinMode(check_btn, INPUT_PULLUP); // LED 연결
 } 
 void loop()
@@ -186,11 +182,11 @@ void power()
 { 
   if (first_out[0] == 1)
   {
-    digitalWrite(2, HIGH);
+    digitalWrite(led, HIGH);
   }
   else
   {
-    digitalWrite(2, LOW);
+    digitalWrite(led, LOW);
   }
 
   if (first_out[1] == 1)

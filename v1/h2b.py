@@ -1,7 +1,5 @@
 import hgtk
 from change import cho_change,joong_change,jong_change,no_han_change
-
-
 class h2b():
     def __init__(self):
         self.글 = ""
@@ -30,8 +28,7 @@ class h2b():
 
             else:  # 공백일 때
                 self.결과 = self.결과 + "000000" 
- 
-            
+
             if i % 2 == 0: # 앞 글자에 
                 self.결과 = 'Q' + self.결과 
 
