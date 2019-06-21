@@ -1,11 +1,10 @@
 import hgtk
 from change_v2 import cho_change,joong_change,jong_change,no_han_change 
-max_length = 4 # 점자 길이
+max_length = 3 # 점자 길이
 class h2b():
     def __init__(self):
         self.text = ""
-        self.braill = "" 
-        self.circle = []
+        self.braill = ""  
         self.result_list = []
 
     def reset(self,length):

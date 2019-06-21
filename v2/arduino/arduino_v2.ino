@@ -1,16 +1,17 @@
 #include <Streaming.h>
 #include <string.h>
-#define max_length 24
-
+#define max_length 18
 int check_btn = 46;
-int led[max_length] = {22, 23, 24, 25, 26, 27,28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,40, 41, 42, 43, 44, 45};
-void LED_state(int braille[]);
-void braille_print(int braille[]);
+int motor[max_length] = {22, 23, 24, 25, 26, 27,28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
+int braille[max_length] = {0,};
+String input_str;
+void Motor_power();
+void Motor_off();
 void setup()
 {
   Serial.begin(9600);
   for (int i = 0; i < max_length; i++)
-    pinMode(led[i], OUTPUT);
+    pinMode(motor[i], OUTPUT);
   pinMode(check_btn, INPUT_PULLUP);
 }
 
@@ -18,49 +19,48 @@ void loop()
 {
   while (Serial.available())
   {
-    String input_str = Serial.readStringUntil('\n');
-    Serial << input_str<<endl;
-    int braille[max_length] = {
-        0,
-    };
+    input_str = Serial.readStringUntil('\n');
+    for(int i = 0 ; i < max_length ; i++){
+      braille[i] = 0;
+    }
     int str_len = input_str.length();
     int j = 0;
     for (int i = 0; i < str_len; i++)
     {
-      if (input_str[i] == '1')
-        braille[j++] = 1;
-      else if (input_str[i] == '0')
-        braille[j++] = 0;
+      if (input_str[i] == '1'){
+        braille[j] = 1;
+        j++;
+      }
+      else if (input_str[i] == '0'){
+        braille[j] = 0;
+        j++;
+      }
     }
-    // braille_print(braille);
     while (1)
     {
-      LED_state(braille);
-
+      Motor_power();
       if (digitalRead(check_btn) == LOW)
       {
         Serial << "q" << endl;
-        delay(500);
+        Motor_off();
+        delay(3000);
         break;
       }
     }
   }
 }
-
-void braille_print(int braille[])
-{
-  for (int i = 0; i < max_length; i++)
-  {
-    Serial<<  "braille[" <<i<<"] = "<< braille[i]<< endl;
-  }
-}
-void LED_state(int braille[])
+void Motor_power()
 {
   for (int i = 0; i < max_length; i++)
   {
     if (braille[i] == 1)
-      digitalWrite(led[i], HIGH);
+      digitalWrite(motor[i], HIGH);
     else if (braille[i] == 0)
-      digitalWrite(led[i], LOW);
+      digitalWrite(motor[i], LOW);
+  }
+}
+void Motor_off(){
+  for (int i = 0 ; i<max_length;i++){
+    digitalWrite(motor[i],LOW);
   }
 }
