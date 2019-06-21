@@ -3,7 +3,7 @@
 #define max_length 24
 
 int check_btn = 46;
-int led[max_length] = {22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45};
+int led[max_length] = {22, 23, 24, 25, 26, 27,28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,40, 41, 42, 43, 44, 45};
 void LED_state(int braille[]);
 void braille_print(int braille[]);
 void setup()
@@ -36,13 +36,11 @@ void loop()
     while (1)
     {
       LED_state(braille);
-      // delay(5000)
-      // Serial << "1" << endl;
 
       if (digitalRead(check_btn) == LOW)
       {
-        Serial << "1" << endl;
-        delay(1000);
+        Serial << "q" << endl;
+        delay(500);
         break;
       }
     }

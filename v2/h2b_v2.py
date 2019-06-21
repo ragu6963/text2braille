@@ -8,11 +8,10 @@ class h2b():
         self.circle = []
         self.result_list = []
 
-    def reset(self,length,i):
+    def reset(self,length):
         for j in range(0,max_length-length):
             self.braill += "000000/"
         self.result_list.append(self.braill) 
-        i=i-1
 
     def convert(self):
         length = 0
@@ -33,7 +32,8 @@ class h2b():
 
                     # 이전 점자 길이 + 현재 점자 길이가 max_length 보다 클 때    
                     else:
-                        self.reset(length,i)
+                        self.reset(length)
+                        i = i - 1
                         self.braill = cho_change(cho)[0] + '/' 
                         self.braill += joong_change(joong)[0] + '/'
                         self.braill += jong_change(jong)[0] +'/'
@@ -49,7 +49,8 @@ class h2b():
                         length = length + cho_change(cho)[1] + joong_change(joong)[1] 
 
                     else: 
-                        self.reset(length,i)  
+                        self.reset(length)
+                        i = i - 1  
                         self.braill = cho_change(cho)[0] + '/'
                         self.braill += joong_change(joong)[0] +'/'
                         length = cho_change(cho)[1] + joong_change(joong)[1] 
@@ -68,7 +69,8 @@ class h2b():
                     self.braill += "000000/" 
                     length += 1
                 else: 
-                    self.reset(length,i) 
+                    self.reset(length)
+                    i = i -1 
                     self.braill = "000000/"
                     length = 1
 

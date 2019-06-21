@@ -11,14 +11,12 @@ for i in range(0,len(test.result_list)):
     print(test.result_list[i])
     arduino.write(test.result_list[i].encode())
     wait="0"
-    while 1: 
+    while 1:
         if arduino.readable():
             wait = arduino.readline() 
             wait = wait.decode() 
-            # print(wait) 
-            if wait[0] == "1": 
-                break   
-
+            if wait[0] == "q": 
+                break
         # wait=input("입력 대기중:")
         # if wait =="1":
         #     break
