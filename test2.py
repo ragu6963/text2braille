@@ -12,15 +12,18 @@ while(True):
     cv2.circle(img,(1500,900),5,(0,0,255),-1)
 
     pts1 = np.float32([[300,50],[1500,50],[300,900],[1500,900]])
-    pts2 = np.float32([[0,0],[1080,0],[0,1920],[1080,1920]])
+    height,weight = img.shape[:2]
+    pts2 = np.float32([[0,0],[weight,0],[0,height],[weight,height]])
     mat = cv2.getPerspectiveTransform(pts1,pts2)
-    result = cv2.warpPerspective(img,mat,(1080,1920))
+    result = cv2.warpPerspective(img,mat,(weight,height))
+    img_gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY) 
 
 
     
     cv2.imshow('img', img)
     cv2.imshow('result',result)
-    # img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
+    cv2.imshow('img_gray',img_gray)
+
     
     if cv2.waitKey(1) & 0xFF == 27:
         break
