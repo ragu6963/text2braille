@@ -15,7 +15,6 @@ def cho_H2b(letter):
         return {"data": "000010/",
                 "length": 1,
                 "braille": "⠐"}
-        # 여기 까지 수정
     elif letter == 'ㅁ':
         return {"data": "000010/",
                 "length": 1,
@@ -348,19 +347,7 @@ def no_han_H2b(letter):
     elif letter == '!':
         return {"data": "011010/",
                 "length": 1,
-                "braille": "⠈"}
-    elif letter == '.':
-        return {"data": "010011/",
-                "length": 1,
-                "braille": "⠈"}
-    elif letter == ',':
-        return {"data": "000010/",
-                "length": 1,
-                "braille": "⠈"}
-    elif letter == '?':
-        return {"data": "011001/",
-                "length": 1,
-                "braille": "⠈"}
+                "braille": "⠈"} 
     elif letter == ':':
         return {"data": "000010/010000/",
                 "length": 2,
