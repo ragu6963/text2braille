@@ -68,14 +68,13 @@ while 1:
             send_list.append(braille)
             braille_length += braille['length']
 
-        elif braille_length + braille['length'] == max_braille_length:  # 글자 길이 초과
+        elif braille_length + braille['length'] == max_braille_length:  # 글자 길이 동일
             send_list.append(braille)
 
+            # 출력
             for send_data in send_list:
-                print(send_data["letter"], end="")  # 송신
-            for send_data in send_list:
-                print(send_data["data"], end="")  # 송신
-            print("\n------------")
+                print(send_data["letter"]+send_data["braille"], end=" ")  
+            print("\n------------------------------------------------")
 
             braille_length = 0
             send_list = []
@@ -84,11 +83,10 @@ while 1:
             for i in range(0, max_braille_length - braille_length):
                 send_list.append(space_braille)
 
+            # 출력
             for send_data in send_list:
-                print(send_data["letter"], end="")  # 송신
-            for send_data in send_list:
-                print(send_data["data"], end="")  # 송신
-            print("\n------------")
+                print(send_data["letter"]+send_data["braille"], end=" ")   
+            print("\n------------------------------------------------")
 
             send_list = [braille]
             braille_length = braille['length']
@@ -97,11 +95,9 @@ while 1:
             for i in range(0, max_braille_length - braille_length):
                 send_list.append(space_braille)
 
+            # 출력
             for send_data in send_list:
-                print(send_data["letter"], end="")  # 송신
-            for send_data in send_list:
-                print(send_data["data"], end="")  # 송신
-
-            print("\n------------")
+                print(send_data["letter"]+send_data["braille"], end=" ")   
+            print("\n------------------------------------------------")
             braille_length = 0
             send_list = []
