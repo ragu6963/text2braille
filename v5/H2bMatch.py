@@ -32,8 +32,6 @@ def cho_H2b(letter):
         return {"data": "000110/",
                 "length": 1,
                 "braille": "⠘"}
-        # 여기 까지 수정
-
     elif letter == 'ㅅ':
         return {"data": "000001/",
                 "length": 1,
