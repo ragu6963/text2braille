@@ -3,28 +3,43 @@ import hgtk
 from H2bMatch import *
 import keyboard
 import time
+import serial
+
 
 C_BOLD  = "\033[1m"
 C_RED   = "\033[31m"
 C_END   = "\033[0m"
 
+def send(data_list):
+    # for data in data_list:
+        # print(data["letter"]+'['+C_BOLD+C_RED+data["braille"]+C_END+']', end=" ")  
+    # print("\n------------------------------------------------")
+    binary_str = ""
+    for data in data_list:
+        binary_str += data["data"]
+    print(binary_str)
+    arduino.write(binary_str.encode())
+    wait = "0"
+    print("아두이노 입력 대기 중...")
+    while 1:
+        if arduino.readable():
+            wait = arduino.readline()
+            wait = wait.decode()
+            if wait[0] == "q":
+                break
+    # while 1:
+    #     if keyboard.is_pressed('q'):
+    #         time.sleep(0.1)
+    #         break
+
+arduino = serial.Serial("COM4", 9600)
+print("초기화중...")
+# time.sleep(3)
+
 space_braille = {"data": "000000/",
                 "length": 1,
                 "braille": " ",
                 "letter": " "}
-            
-
-def send(data_list):
-    for data in data_list:
-        print(data["letter"]+'[ '+C_BOLD+C_RED+data["braille"]+C_END+' ]', end=" ")  
-    print("\n------------------------------------------------")
-    print("아두이노 입력 대기 중...")
-    while 1:
-        if keyboard.is_pressed('q'):
-            time.sleep(0.1)
-            break
-
-
 braille_length = 0
 max_braille_length = 4
 
@@ -95,9 +110,7 @@ while 1:
         elif braille_length + braille['length'] == max_braille_length:  # 글자 길이 동일
             send_list.append(braille)
 
-            # 출력
             send(send_list) 
-
             braille_length = 0
             send_list = []
 
@@ -105,19 +118,19 @@ while 1:
             for i in range(0, max_braille_length - braille_length):
                 send_list.append(space_braille)
 
-            # 출력
             send(send_list)
-            
             send_list = [braille]
             braille_length = braille['length']
 
         if index == len(braille_list)-1:  # 마지막 글자
             for i in range(0, max_braille_length - braille_length):
                 send_list.append(space_braille)
-            # 출력
-            send(send_list) 
 
+            send(send_list) 
             braille_length = 0
             send_list = []
-
-    print("송신 완료")
+    
+    end_str="000000/000000/000000/000000/"
+    print(end_str)
+    arduino.write(end_str.encode())
+    print("전송 완료")

@@ -293,7 +293,111 @@ def jong_H2b(letter):
 
 
 def no_han_H2b(letter):
-    if letter == '1':
+    if letter == 'a' or letter == 'A':
+        return {"data": "001011/100000/",
+                "length": 2,
+                "braille": "⠴⠁"}
+    elif letter == 'b' or letter == 'B':
+        return {"data": "001011/110000/",
+                "length": 2,
+                "braille": "⠴⠃"}
+    elif letter == 'c' or letter == 'C':
+        return {"data": "001011/100100/",
+                "length": 2,
+                "braille": "⠴⠉"}
+    elif letter == 'd' or letter == 'D':
+        return {"data": "001011/100110/",
+                "length": 2,
+                "braille": "⠴⠙"}
+    elif letter == 'e' or letter == 'E':
+        return {"data": "001011/100010/",
+                "length": 2,
+                "braille": "⠴⠑"}
+    elif letter == 'f' or letter == 'F':
+        return {"data": "001011/110100/",
+                "length": 2,
+                "braille": "⠴⠋"}
+    elif letter == 'g' or letter == 'G':
+        return {"data": "001011/110110/",
+                "length": 2,
+                "braille": "⠴⠛"}
+    elif letter == 'h' or letter == 'H':
+        return {"data": "001011/110010/",
+                "length": 2,
+                "braille": "⠴⠓"}
+    elif letter == 'i' or letter == 'I':
+        return {"data": "001011/010100/",
+                "length": 2,
+                "braille": "⠴⠊"}
+    elif letter == 'j' or letter == 'J':
+        return {"data": "001011/010110/",
+                "length": 2,
+                "braille": "⠴⠚"}
+    elif letter == 'k' or letter == 'K':
+        return {"data": "001011/101000/",
+                "length": 2,
+                "braille": "⠴⠅"}
+    elif letter == 'l' or letter == 'L':
+        return {"data": "001011/111000/",
+                "length": 2,
+                "braille": "⠴⠇"}
+    elif letter == 'm' or letter == 'M':
+        return {"data": "001011/101100/",
+                "length": 2,
+                "braille": "⠴⠍"}
+    elif letter == 'n' or letter == 'N':
+        return {"data": "001011/101110/",
+                "length": 2,
+                "braille": "⠴⠝"}
+    elif letter == 'o' or letter == 'O':
+        return {"data": "001011/101010/",
+                "length": 2,
+                "braille": "⠴⠕"}
+    elif letter == 'p' or letter == 'P':
+        return {"data": "001011/111100/",
+                "length": 2,
+                "braille": "⠴⠏"}
+    elif letter == 'q' or letter == 'Q':
+        return {"data": "001011/111110/",
+                "length": 2,
+                "braille": "⠴⠟"}
+    elif letter == 'r' or letter == 'R':
+        return {"data": "001011/111010/",
+                "length": 2,
+                "braille": "⠴⠗"}
+    elif letter == 's' or letter == 'S':
+        return {"data": "001011/011100/",
+                "length": 2,
+                "braille": "⠴⠎"}
+    elif letter == 't' or letter == 'T':
+        return {"data": "001011/011110/",
+                "length": 2,
+                "braille": "⠴⠞"}
+    elif letter == 'u' or letter == 'U':
+        return {"data": "001011/101001/",
+                "length": 2,
+                "braille": "⠴⠥"}
+    elif letter == 'v' or letter == 'V':
+        return {"data": "001011/111001/",
+                "length": 2,
+                "braille": "⠴⠧"}
+    elif letter == 'w' or letter == 'W':
+        return {"data": "001011/010111/",
+                "length": 2,
+                "braille": "⠴⠺"}
+    elif letter == 'x' or letter == 'X':
+        return {"data": "001011/101101/",
+                "length": 2,
+                "braille": "⠴⠭"}
+    elif letter == 'y' or letter == 'Y':
+        return {"data": "001011/101111/",
+                "length": 2,
+                "braille": "⠴⠽"}
+    elif letter == 'z' or letter == 'Z':
+        return {"data": "001011/101011/",
+                "length": 2,
+                "braille": "⠴⠵"}
+    elif letter == '1':
         return {"data": "001111/100000/",
                 "length": 2,
                 "braille": "⠼⠁"}
@@ -365,6 +469,7 @@ def no_han_H2b(letter):
         return {"data": "000011/011000/",
                 "length": 2,
                 "braille": "⠰⠆"}
+    
     else:
         return {"data": "000000/",
                 "length": 1,

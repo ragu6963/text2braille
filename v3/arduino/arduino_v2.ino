@@ -2,8 +2,10 @@
 #include <string.h>
 #define max_length 18
 int check_btn = 46;
-int motor[max_length] = {22, 23, 24, 25, 26, 27,28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
-int braille[max_length] = {0,};
+int motor[max_length] = {22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
+int braille[max_length] = {
+    0,
+};
 String input_str;
 void Motor_power();
 void Motor_off();
@@ -20,18 +22,21 @@ void loop()
   while (Serial.available())
   {
     input_str = Serial.readStringUntil('\n');
-    for(int i = 0 ; i < max_length ; i++){
+    for (int i = 0; i < max_length; i++)
+    {
       braille[i] = 0;
     }
     int str_len = input_str.length();
     int j = 0;
     for (int i = 0; i < str_len; i++)
     {
-      if (input_str[i] == '1'){
+      if (input_str[i] == '1')
+      {
         braille[j] = 1;
         j++;
       }
-      else if (input_str[i] == '0'){
+      else if (input_str[i] == '0')
+      {
         braille[j] = 0;
         j++;
       }
@@ -59,8 +64,10 @@ void Motor_power()
       digitalWrite(motor[i], LOW);
   }
 }
-void Motor_off(){
-  for (int i = 0 ; i<max_length;i++){
-    digitalWrite(motor[i],LOW);
+void Motor_off()
+{
+  for (int i = 0; i < max_length; i++)
+  {
+    digitalWrite(motor[i], LOW);
   }
 }
