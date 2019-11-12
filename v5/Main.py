@@ -11,13 +11,13 @@ C_RED   = "\033[31m"
 C_END   = "\033[0m"
 
 def send(data_list):
-    # for data in data_list:
-        # print(data["letter"]+'['+C_BOLD+C_RED+data["braille"]+C_END+']', end=" ")  
-    # print("\n------------------------------------------------")
+    for data in data_list:
+        print(data["letter"]+'['+C_BOLD+C_RED+data["braille"]+C_END+']', end=" ")  
+    print("\n------------------------------------------------")
     binary_str = ""
     for data in data_list:
         binary_str += data["data"]
-    print(binary_str)
+    # print(binary_str)
     arduino.write(binary_str.encode())
     wait = "0"
     print("아두이노 입력 대기 중...")
