@@ -1,3 +1,6 @@
+import hgtk
+import keyboard
+import time
 braille = ["⠁","⠂","⠃","⠄","⠅",
 "⠆","⠇","⠈","⠉","⠊","⠋","⠌","⠍",
 "⠎","⠏","⠐","⠑","⠒","⠓","⠔","⠕",
@@ -7,6 +10,95 @@ braille = ["⠁","⠂","⠃","⠄","⠅",
 "⠨","⠩","⠪","⠫","⠬","⠭","⠮","⠯",
 "⠰","⠱","⠲","⠳","⠴","⠵","⠶","⠷",
 "⠸","⠹","⠺","⠻","⠼","⠽","⠾","⠿",]
+space_braille = {"data": "000000/",
+                "length": 1,
+                "braille": " ",
+                "letter": " "}
+
+
+C_BOLD  = "\033[1m"
+C_RED   = "\033[31m"
+C_END   = "\033[0m"
+
+def convert_H2b(text_list):
+    braille_list = []
+    for voca in text_list:
+        # 약어 단어 O => 그러나 그래서 ... ...
+        if abbr_H2b(voca):  
+            temp = abbr_H2b(voca)
+            temp['letter'] = voca
+            braille_list.append(temp)
+            braille_list.append(space_braille)
+        # 약어 단어 X 
+        else:   
+            for letter in voca:
+                # 약어 글자 O => 가 나 다    ...
+                if abbr_H2b(letter):  
+                    temp = abbr_H2b(letter)
+                    temp['letter'] = letter
+                    braille_list.append(temp)
+                # 약어 글자 X
+                else:  
+                    # 한글 O
+                    if hgtk.checker.is_hangul(letter):  
+                        # 종성 O
+                        if hgtk.checker.has_batchim(letter):  
+                            element = hgtk.letter.decompose(letter)
+                            temp = cho_H2b(element[0])
+                            temp['letter'] = element[0]
+                            braille_list.append(temp)
+
+                            temp = joong_H2b(element[1])
+                            temp['letter'] = element[1]
+                            braille_list.append(temp)
+
+                            temp = jong_H2b(element[2])
+                            temp['letter'] = element[2]
+                            braille_list.append(temp)
+                        # 종성 X
+                        else:  
+                            element = hgtk.letter.decompose(letter)
+                            temp = cho_H2b(element[0])
+                            temp['letter'] = element[0]
+                            braille_list.append(temp)
+
+                            temp = joong_H2b(element[1])
+                            temp['letter'] = element[1]
+                            braille_list.append(temp)
+                    # 한글 X
+                    else:  
+                        temp = no_han_H2b(letter)
+                        temp['letter'] = letter
+                        braille_list.append(temp)
+            braille_list.append(space_braille)
+    return braille_list
+
+
+def send_H2b(data_list):
+    for data in data_list:
+        print(data["letter"]+'['+C_BOLD+C_RED+data["braille"]+C_END+']', end=" ")  
+    print("\n------------------------------------------------")
+    binary_str = ""
+    for data in data_list:
+        binary_str += data["data"]
+    print("아두이노 입력 대기 중...")
+    
+    # print(binary_str)
+    # arduino.write(binary_str.encode())
+    # wait = "0"
+    
+    # while 1:
+    #     if arduino.readable():
+    #         wait = arduino.readline()
+    #         wait = wait.decode()
+    #         if wait[0] == "q":
+    #             break
+    while 1:
+        if keyboard.is_pressed('q'):
+            time.sleep(0.1)
+            break
+
+
 def cho_H2b(letter):
     if letter == 'ㄱ':
         return {"data": "000100/",
@@ -612,3 +704,5 @@ def abbr_H2b(letter):
         return {"data": "000000/",
                 "length": 1,
                 "braille": " "}
+
+
