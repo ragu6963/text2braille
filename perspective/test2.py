@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 while(True):
