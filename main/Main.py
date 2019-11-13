@@ -6,10 +6,7 @@ import serial
 from H2bMatch import *
 
 
-
-
-
-arduino = serial.Serial("COM4", 9600)
+# arduino = serial.Serial("COM4", 9600)
 print("초기화중...")
 # time.sleep(3)
 
