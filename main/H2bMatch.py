@@ -75,7 +75,7 @@ def convert_H2b(text_list):
 
 def send_H2b(data_list):
     for data in data_list:
-        print(data["letter"]+'['+C_BOLD+C_RED+data["braille"]+C_END+']', end=" ")  
+        print(data["letter"]+'['+C_RED+data["braille"]+C_END+']', end=" ")  
     print("\n------------------------------------------------")
     binary_str = ""
     for data in data_list:
