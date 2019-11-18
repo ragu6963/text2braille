@@ -15,7 +15,6 @@ space_braille = {"data": "000000/",
                 "braille": " ",
                 "letter": " "}
 
-
 C_BOLD  = "\033[1m"
 C_RED   = "\033[31m"
 C_END   = "\033[0m"
