@@ -36,14 +36,14 @@ while(True):
         break
 
 # dst = cv2.imread("./test1.png")
-# dst = cv2.cvtColor(dst,cv2.COLOR_BGR2GRAY)
+# gray = cv2.cvtColor(dst,cv2.COLOR_BGR2GRAY)
 # blurred =cv2.GaussianBlur(gray,(5,5),0)
 # edge = cv2.Canny(blurred,30,50)
 # cv2.imshow("edge",edge)
 # cv2.waitKey(0)
 
-config = ('--tessdata-dir "tessdata" -l eng --oem 1 --psm 3')
+# config = ('--tessdata-dir "tessdata" -l eng --oem 1 --psm 3')
 config = ('-l kor ')
 
-text = pytesseract.image_to_string(dst,lang="Hangul")
+text = pytesseract.image_to_string(edge,lang="kor")
 print(text)
