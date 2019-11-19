@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*- 
 import hgtk
 import keyboard
 import time
@@ -12,49 +11,86 @@ C_BOLD  = "\033[1m"
 C_RED   = "\033[31m"
 C_END   = "\033[0m"
 
-def convert_H2b(text_list):
+def convert_T2B(text_list):
     braille_list = []
     for voca in text_list:
         # 약어 단어 O => 그러나 그래서 ... ...
-        if abbr_H2b(voca):   
-            braille_list.append(abbr_H2b(voca)) 
+        if abbr_T2B(voca):   
+            braille_list.append(abbr_T2B(voca)) 
         # 약어 단어 X 
         else:   
             for letter in voca:
                 # 약어 글자 O => 가 나 다    ...
-                if abbr_H2b(letter):   
-                    braille_list.append(abbr_H2b(letter))
+                if abbr_T2B(letter):   
+                    braille_list.append(abbr_T2B(letter))
                 # 약어 글자 X
                 else:  
                     # 한글 O
                     if hgtk.checker.is_hangul(letter):  
                         element = hgtk.letter.decompose(letter)
                         if(element[0] != 'ㅇ'): 
-                            braille_list.append(cho_H2b(element[0]))
+                            braille_list.append(cho_T2B(element[0]))
 
-                        braille_list.append(joong_H2b(element[1]))
+                        braille_list.append(joong_T2B(element[1]))
                         # 종성 O
                         if hgtk.checker.has_batchim(letter):     
-                            braille_list.append(jong_H2b(element[2])) 
+                            braille_list.append(jong_T2B(element[2])) 
                     # 한글 X
                     else:   
-                        braille_list.append( no_han_H2b(letter) )
+                        braille_list.append(no_han_T2B(letter) )
         braille_list.append(space_braille)
     return braille_list 
 
-def send_H2b(data_list,arduino):
+def send_T2B(braille_list,arduino):
+    now_braille_length = 0
+    max_braille_length = 4
+    data_list = []
+    for index, braille in enumerate(braille_list):
+        length = braille['length']
+        
+        if now_braille_length + length < max_braille_length:
+            data_list.append(braille)
+            now_braille_length += length
+
+        elif now_braille_length + length == max_braille_length:  # 글자 길이 동일
+            data_list.append(braille)
+
+            sendData_T2B(data_list,arduino) 
+            now_braille_length = 0
+            data_list = []
+
+        elif now_braille_length + length > max_braille_length:  # 글자 길이 초과
+            for i in range(0, max_braille_length - now_braille_length):
+                data_list.append(space_braille)
+
+            sendData_T2B(data_list,arduino)
+            data_list = [braille]
+            now_braille_length = length
+
+        if index == len(braille_list)-1:  # 마지막 글자
+            for i in range(0, max_braille_length - now_braille_length):
+                data_list.append(space_braille)
+
+            sendData_T2B(data_list,arduino) 
+            now_braille_length = 0
+            data_list = []  
+    print("전송 완료")
+
+def sendData_T2B(data_list,arduino):
+
     for data in data_list:
-        print(data["letter"]+'['+C_RED+data["braille"]+C_END+']', end=" ")  
-    print("\n------------------------------------------------")
+        print(data["letter"]+'['+C_RED+data["braille"]+C_END+']', end="")  
+        
+    print("\n",end="")
     binary_str = ""
     for data in data_list:
         binary_str += data["data"]
-    print("아두이노 입력 대기 중...")
-    
     print(binary_str)
+    print("아두이노 입력 대기 중...") 
+    print("------------------------------------------------",)
     arduino.write(binary_str.encode())
-    wait = "0"
     
+    wait = "0" 
     while 1:
         if arduino.readable():
             wait = arduino.readline()
@@ -67,7 +103,7 @@ def send_H2b(data_list,arduino):
     #         break
 
 
-def cho_H2b(letter):
+def cho_T2B(letter):
     if letter == 'ㄱ':
         return {"letter":"ㄱ",
                 "data": "000100/",
@@ -165,7 +201,7 @@ def cho_H2b(letter):
                 "braille": " "}
 
 
-def joong_H2b(letter):
+def joong_T2B(letter):
     if letter == 'ㅏ':
         return {"letter":"ㅏ",
                 "data": "110001/",
@@ -278,7 +314,7 @@ def joong_H2b(letter):
                 "braille": " "}
 
 
-def jong_H2b(letter):
+def jong_T2B(letter):
     if letter == 'ㄱ':
         return {"data": "100000/",
                 "length": 1,
@@ -416,7 +452,7 @@ def jong_H2b(letter):
                 "braille": "⠌"}
 
 
-def no_han_H2b(letter):
+def no_han_T2B(letter):
     if letter == 'a' or letter == 'A':
         return {"data": "001011/100000/",
                 "length": 2,
@@ -643,7 +679,7 @@ def no_han_H2b(letter):
                 "letter":" ",
                 "braille": " "}
 
-def abbr_H2b(letter):
+def abbr_T2B(letter):
     if letter == "가":
         return {"data": "110101/",
                 "length": 1,

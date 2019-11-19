@@ -10,14 +10,15 @@ int motor[max_length] = {
   22, 24, 26, 23, 25, 27,
   28, 30, 32, 29, 31, 33,
   34, 36, 38, 35, 37, 39,
-  40, 42, 44, 41, 43, 45};
+  40, 42, 44, 41, 43, 45
+};
 String binary_input;
 String binary_data;
 void Motor_power();
 void Motor_off();
 void setup()
 {
-  Serial.begin(9600); 
+  Serial.begin(9600);
   for (int i = 0; i < max_length; i++)
     pinMode(motor[i], OUTPUT);
 
@@ -31,49 +32,37 @@ void setup()
 void loop()
 {
   //  if (digitalRead(toggle) == HIGH)
-  if(1)
+  if (1)
   {
     digitalWrite(port_led, HIGH);
     digitalWrite(blue_led, LOW);
     Serial1.end();
-    if (Serial.available())
+    binary_input = Serial.readStringUntil('\n');
+    Serial.println(binary_input);
+    binary_input = "";
+    for (int i = 0; i < binary_input.length(); i++)
     {
-      binary_input = Serial.readStringUntil('\n');
-      Serial.println(binary_input);
-      if (!binary_input.compareTo("Q\r"))
+      if (binary_input[i] != '/')
+        binary_data += binary_input[i];
+    }
+    Motor_power(binary_data);
+    while (1)
+    {
+      if (digitalRead(btnNext) == LOW)
       {
+        Serial.println("q");
+        delay(1000);
         Motor_off();
-        Serial1.print("q\r\n");
+        //delay(3000);
+        break;
       }
-      else
+      if (digitalRead(btnCap) == LOW)
       {
-        binary_input = "";
-
-        for (int i = 0; i < binary_input.length(); i++)
-        {
-          if (binary_input[i] != '/')
-            binary_data += binary_input[i];
-        }
-        Motor_power(binary_data);
-        while (1)
-        {
-          if (digitalRead(btnNext) == LOW)
-          {
-            Serial.println("q"); 
-            delay(1000);
-            Motor_off();
-            //delay(3000);
-            break;
-          }
-          if(digitalRead(btnCap) == LOW)
-          {
-            Serial.println("p");
-            delay(1000);
-            Motor_off();
-            //delay(3000);
-            break;
-          }
-        }
+        Serial.println("p");
+        delay(1000);
+        Motor_off();
+        //delay(3000);
+        break; 
       }
     }
   }
@@ -114,7 +103,7 @@ void loop()
           }
         }
       }
-    } 
+    }
   }
 }
 void Motor_power(String binary_data)
@@ -130,5 +119,3 @@ void Motor_off()
   for (int i = 0; i < max_length; i++)
     digitalWrite(motor[i], LOW);
 }
-
-
