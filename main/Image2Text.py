@@ -8,6 +8,9 @@ import sys
 import threading
 import serial
 import pyautogui 
+from skimage.filters import threshold_local # scikit-image
+import imutils
+from test2 import *
 
 def nothing(x):
     pass
@@ -30,6 +33,7 @@ def btn_detect_I2T(arduino):
 
 def img_OCR(image):
     cv2.imshow("OCR",image)
+    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     text = pytesseract.image_to_string(image,lang="Hangul")
     print(text)
     cv2.waitKey(0)
@@ -85,6 +89,7 @@ def video_cap_I2T():
         # 이미지 캡쳐 버튼
         elif k == ord('p'):
             img_OCR_th = threading.Thread(target = img_OCR, name=" img_OCR",args = (video_result,))
+            img_OCR_th.daemon = True
             img_OCR_th.start()     
 
     sys.exit()
