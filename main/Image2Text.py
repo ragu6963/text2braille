@@ -10,7 +10,6 @@ import serial
 import pyautogui 
 from skimage.filters import threshold_local # scikit-image
 import imutils
-from test2 import *
 
 def nothing(x):
     pass
@@ -42,7 +41,10 @@ def img_OCR(image):
 def video_cap_I2T():
     x = [0,0,0,0]
     y = [0,0] 
-    cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)  
+    cap = cv2.VideoCapture(0,cv2.CAP_DSHOW) 
+    cap.set(3,300)
+    cap.set(4,300)
+
     cv2.namedWindow("video") 
     cv2.createTrackbar('x_1', 'video', x[0], 1000, nothing)
     cv2.createTrackbar('x_2', 'video', x[1], 1000, nothing) 

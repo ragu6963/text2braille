@@ -3,9 +3,9 @@
 
 int blue_led = 8;
 int port_led = 6;
-int toggle = 51;
+int toggle = 53;
 int btnNext = 52;
-int btnCap = 53;
+int btnCap = 51;
 int motor[max_length] = {
   22, 24, 26, 23, 25, 27,
   28, 30, 32, 29, 31, 33,
@@ -31,43 +31,45 @@ void setup()
 
 void loop()
 {
-  //  if (digitalRead(toggle) == HIGH)
-  if (1)
+  if (digitalRead(toggle) == HIGH)
   {
     digitalWrite(port_led, HIGH);
     digitalWrite(blue_led, LOW);
-    Serial1.end();
-    binary_input = Serial.readStringUntil('\n');
-    Serial.println(binary_input);
-    binary_input = "";
-    for (int i = 0; i < binary_input.length(); i++)
-    {
-      if (binary_input[i] != '/')
-        binary_data += binary_input[i];
-    }
-    Motor_power(binary_data);
-    while (1)
-    {
-      if (digitalRead(btnNext) == LOW)
+    if (Serial.available()) {
+      Serial1.end();
+      binary_input = Serial.readStringUntil('\n');
+      Serial.println(binary_input);
+      binary_input = "";
+      for (int i = 0; i < binary_input.length(); i++)
       {
-        Serial.println("q");
-        delay(1000);
-        Motor_off();
-        //delay(3000);
-        break;
+        if (binary_input[i] != '/')
+          binary_data += binary_input[i];
       }
-      if (digitalRead(btnCap) == LOW)
+      Motor_power(binary_data);
+      while (1)
       {
-        Serial.println("p");
-        delay(1000);
-        Motor_off();
-        //delay(3000);
-        break; 
+        if (digitalRead(toggle) == LOW)
+          break;
+        if (digitalRead(btnNext) == LOW)
+        {
+          Serial.println("q");
+          delay(1000);
+          Motor_off();
+          //delay(3000);
+          break;
+        }
+        if (digitalRead(btnCap) == LOW)
+        {
+          Serial.println("p");
+          delay(1000);
+          Motor_off();
+          //delay(3000);
+          break;
+        }
       }
     }
   }
-  else
-    //  else if (digitalRead(toggle) == LOW)
+  if (digitalRead(toggle) == LOW)
   {
     digitalWrite(port_led, LOW);
     digitalWrite(blue_led, HIGH);
@@ -93,12 +95,13 @@ void loop()
         Motor_power(binary_data);
         while (1)
         {
+          if (digitalRead(toggle) == HIGH)
+            break;
           if (digitalRead(btnNext) == LOW)
           {
             Serial1.print("q\r\n");
             Motor_off();
             delay(1500);
-            //        delay(3000);
             break;
           }
         }
@@ -106,6 +109,7 @@ void loop()
     }
   }
 }
+
 void Motor_power(String binary_data)
 {
 
@@ -114,6 +118,7 @@ void Motor_power(String binary_data)
     digitalWrite(motor[i], binary_data[i] - '0');
   }
 }
+
 void Motor_off()
 {
   for (int i = 0; i < max_length; i++)

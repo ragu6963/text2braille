@@ -8,6 +8,7 @@ import sys
 import threading
 import serial
 import pyautogui  
+from Text2Braille import * 
 
 src = [] 
 
@@ -20,63 +21,79 @@ def btn_detect_I2T(arduino):
         if arduino.readable():
             btn = arduino.readline()
             btn = btn.decode()
-
             if btn[0] == "p":
                 print("p")
                 pyautogui.press("p")    
-                continue 
-
-            if btn[0] == "q":
-                print("q")
                 sys.exit()
 
-def img_OCR(image):
+            # if btn[0] == "q":
+                # print("q")
+                # sys.exit()
+
+def img_OCR(image,arduino):
     gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 
     GaussianBlur = cv2.GaussianBlur(gray, (5, 5), 0)
-    cv2.imshow("GaussianBlur",GaussianBlur)
+    # cv2.imshow("GaussianBlur",GaussianBlur)
 
-    # bilateralFilter = cv2.bilateralFilter(gray,5,75,75)
-    # cv2.imshow("bilateralFilter",bilateralFilter)
+    th = cv2.adaptiveThreshold(GaussianBlur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
+    # cv2.imshow("th",th)
 
-    th1 = cv2.adaptiveThreshold(GaussianBlur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
-    # th2 = cv2.adaptiveThreshold(bilateralFilter,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
-    cv2.imshow("th1",th1)
-    # cv2.imshow("th2",th2)
+    # kernel = np.ones((3, 3), np.uint8)
+    # dilate1 = cv2.erode(th, kernel, iterations = 1)
+    # cv2.imshow("dilate1",dilate1)
 
-    # ret2, th3 = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    config = ('-l kor --oem 1 --psm 3')
+    text = pytesseract.image_to_string(th,config=config)
 
-
-    kernel = np.ones((1, 1), np.uint8)
-    dilate1 = cv2.erode(th1, kernel, iterations = 1)
-    # dilate2 = cv2.erode(th2, kernel, iterations = 1)
-
-    cv2.imshow("dilate1",dilate1)
-    # cv2.imshow("dilate2",dilate2)
-
-    # cv2.imshow("th2",th2)
-
-    config = ('-l eng --oem 1 --psm 3')
-    text = pytesseract.image_to_string(dilate1,config=config)
     print(text)
-    # text = pytesseract.image_to_string(dilate2,config=config)
-    # print(text)
-    cv2.waitKey(0)   
-    cv2.destroyWindow("dilate1")
-    # cv2.destroyWindow("dilate2")
+    
+    text_list = text.split() # 공백 기준으로 단어 split
+
+    # braille_th = threading.Thread(target=convert_T2B,name="convert_T2B",args=(text_list))
+    # braille_th.daemon = True
+    # braille_list = braille_th.start()
+    # braille_th.join()
+
+    braille_list = convert_T2B(text_list) # 나눈 단어 점자 데이터로 변환
+    print("데이터 변환 중...")
+    print("변환 완료")
+    print("전송 시작")  
+
+    send_th = threading.Thread(target=send_T2B,name="send_T2B",args=(braille_list,arduino))
+    send_th.daemon = True
+    send_th.start()
+    send_th.join()
+
+    # send_T2B(braille_list,arduino) # 점자 데이터 전송  
+    btn_detect_th = threading.Thread(target = btn_detect_I2T, name="btn_detect",args=(arduino,))
+    btn_detect_th.daemon = True
+    btn_detect_th.start()
+    # cv2.waitKey(0)   
 
 def mouse_handler(event, x, y, flags, param):
     global src 
     if event == cv2.EVENT_LBUTTONUP:
-        src.append([x, y]) 
+        if(len(src) == 4):
+            pass
+        else:
+            src.append([x, y]) 
     if event == cv2.EVENT_RBUTTONUP:
         src = []
         cv2.destroyWindow("result")
 
-def video_cap_I2T(): 
+def video_cap_I2T(arduino): 
     global src
+
     cv2.namedWindow('video')
-    cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)  
+
+    cap = cv2.VideoCapture(cv2.CAP_DSHOW)  
+
+    codec = cv2.VideoWriter_fourcc(	'M', 'J', 'P', 'G'	)
+    cap.set(6, codec)
+    cap.set(5, 15)
+    cap.set(3, 1920)
+    cap.set(4, 1080)
 
     while 1:    
         ret, video = cap.read()  
@@ -85,7 +102,6 @@ def video_cap_I2T():
         height, width, channel = video.shape
         matrix = cv2.getRotationMatrix2D((width/2, height/2), 180, 1)
         video = cv2.warpAffine(video, matrix, (width, height))
-        video = cv2.resize(video, (2*width, 2*height), interpolation = cv2.INTER_CUBIC )
         
         video_copy = video.copy()
 
@@ -102,7 +118,6 @@ def video_cap_I2T():
             M = cv2.getPerspectiveTransform(src=src_np, dst=dst_np)
             result = cv2.warpPerspective(video, M=M, dsize=(width, height))
             height, width = result.shape[:2]
-            # result = cv2.resize(result, (2*width, 2*height), interpolation = cv2.INTER_CUBIC )
             cv2.imshow('result', result)   
 
         k = cv2.waitKey(1) 
@@ -114,7 +129,7 @@ def video_cap_I2T():
         # 이미지 캡쳐 버튼
         elif k == ord('p'):
             if len(src) == 4:
-                img_OCR_th = threading.Thread(target = img_OCR, name="img_OCR",args = (result,))
+                img_OCR_th = threading.Thread(target = img_OCR, name="img_OCR",args = (result,arduino))
                 img_OCR_th.daemon = True
                 img_OCR_th.start()     
     sys.exit()

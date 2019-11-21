@@ -2,6 +2,8 @@ import hgtk
 import keyboard
 import time
 import serial 
+import sys
+import pyautogui
 space_braille = {"data": "000000/",
                 "length": 1,
                 "braille": " ",
@@ -75,9 +77,9 @@ def send_T2B(braille_list,arduino):
             now_braille_length = 0
             data_list = []  
     print("전송 완료")
+    sys.exit()
 
 def sendData_T2B(data_list,arduino):
-
     for data in data_list:
         print(data["letter"]+'['+C_RED+data["braille"]+C_END+']', end="")  
         
