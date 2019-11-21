@@ -8,27 +8,24 @@ import sys
 import threading
 import serial
 import pyautogui  
-from Text2Braille import * 
+from Text2Braille import *  
 
 src = [] 
 
 def nothing(x):
     pass
 
-def btn_detect_I2T(arduino): 
-    print("start btn_detect")
+def btn_detect_I2T(arduino):    
+    print("start detect capture button")
     while 1:
         if arduino.readable():
             btn = arduino.readline()
             btn = btn.decode()
             if btn[0] == "p":
-                print("p")
+                print("Capture")
                 pyautogui.press("p")    
-                sys.exit()
+                sys.exit() 
 
-            # if btn[0] == "q":
-                # print("q")
-                # sys.exit()
 
 def img_OCR(image,arduino):
     gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
@@ -39,32 +36,38 @@ def img_OCR(image,arduino):
     th = cv2.adaptiveThreshold(GaussianBlur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
     # cv2.imshow("th",th)
 
-    # kernel = np.ones((3, 3), np.uint8)
-    # dilate1 = cv2.erode(th, kernel, iterations = 1)
-    # cv2.imshow("dilate1",dilate1)
+    kernel = np.ones((3, 3), np.uint8)
+    erode = cv2.erode(th, kernel, iterations = 1)
+    # cv2.imshow("erode",erode)
 
-    config = ('-l kor --oem 1 --psm 3')
-    text = pytesseract.image_to_string(th,config=config)
+    cv2.imshow("OCR",erode)
+    cv2.waitKey(1)  
+    
+    # config = ('-l Hangul --oem 1 --psm 3')
+    # config = ('-l kor --oem 1 --psm 3')
+    # config = ('-l kor + eng --oem 1 --psm 3')
+    config = ('-l eng --oem 1 --psm 3')
+
+
+    text = pytesseract.image_to_string(erode,config=config)
 
     print(text)
-    
-    text_list = text.split() # 공백 기준으로 단어 split 
-
-    braille_list = convert_T2B(text_list) # 나눈 단어 점자 데이터로 변환
     print("데이터 변환 중...")
+    text_list = text.split() 
+    braille_list = convert_T2B(text_list) 
     print("변환 완료")
-    print("전송 시작")  
+    print("전송 시작")   
 
     send_th = threading.Thread(target=send_T2B,name="send_T2B",args=(braille_list,arduino))
     send_th.daemon = True
     send_th.start()
     send_th.join()
+    
+    cv2.destroyWindow("OCR")
 
-    # send_T2B(braille_list,arduino) # 점자 데이터 전송  
-    btn_detect_th = threading.Thread(target = btn_detect_I2T, name="btn_detect",args=(arduino,))
+    btn_detect_th = threading.Thread(target = btn_detect_I2T, name="btn_detect_I2T",args=(arduino,))
     btn_detect_th.daemon = True
     btn_detect_th.start()
-    # cv2.waitKey(0)   
 
 def mouse_handler(event, x, y, flags, param):
     global src 
@@ -78,17 +81,19 @@ def mouse_handler(event, x, y, flags, param):
         cv2.destroyWindow("result")
 
 def video_cap_I2T(arduino): 
-    global src
-
-    cv2.namedWindow('video')
-
-    cap = cv2.VideoCapture(cv2.CAP_DSHOW)  
-
+    print("start videocapture")
+    global src 
+    cv2.namedWindow('video') 
+    cap = cv2.VideoCapture(cv2.CAP_DSHOW)   
     codec = cv2.VideoWriter_fourcc(	'M', 'J', 'P', 'G'	)
     cap.set(6, codec)
     cap.set(5, 30)
     cap.set(3, 1920)
     cap.set(4, 1080)
+
+    btn_detect_th = threading.Thread(target = btn_detect_I2T, name="btn_detect_I2T",args=(arduino,))
+    btn_detect_th.daemon = True
+    btn_detect_th.start()
 
     while 1:    
         ret, video = cap.read()  
@@ -112,7 +117,7 @@ def video_cap_I2T(arduino):
             dst_np = np.array([[0, 0],[width, 0],[width, height],[0, height]], dtype=np.float32)
             M = cv2.getPerspectiveTransform(src=src_np, dst=dst_np)
             result = cv2.warpPerspective(video, M=M, dsize=(width, height))
-            height, width = result.shape[:2]
+            height, width = result.shape[:2]  
             cv2.imshow('result', result)   
 
         k = cv2.waitKey(1) 
@@ -126,5 +131,4 @@ def video_cap_I2T(arduino):
             if len(src) == 4:
                 img_OCR_th = threading.Thread(target = img_OCR, name="img_OCR",args = (result,arduino))
                 img_OCR_th.daemon = True
-                img_OCR_th.start()     
-    sys.exit()
+                img_OCR_th.start()      

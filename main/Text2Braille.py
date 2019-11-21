@@ -4,6 +4,9 @@ import time
 import serial 
 import sys
 import pyautogui
+import threading
+
+
 space_braille = {"data": "000000/",
                 "length": 1,
                 "braille": " ",
@@ -12,6 +15,8 @@ space_braille = {"data": "000000/",
 C_BOLD  = "\033[1m"
 C_RED   = "\033[31m"
 C_END   = "\033[0m"
+
+global send_state
 
 def convert_T2B(text_list):
     braille_list = []
@@ -47,8 +52,17 @@ def send_T2B(braille_list,arduino):
     now_braille_length = 0
     max_braille_length = 4
     data_list = []
+
+    global send_state
+    send_state = True
+
     for index, braille in enumerate(braille_list):
         length = braille['length']
+        # 통신 중 취소
+        if send_state == False: 
+            print("초기화")
+            arduino.write("000000/000000/000000/000000/".encode())
+            break
         
         if now_braille_length + length < max_braille_length:
             data_list.append(braille)
@@ -76,10 +90,11 @@ def send_T2B(braille_list,arduino):
             sendData_T2B(data_list,arduino) 
             now_braille_length = 0
             data_list = []  
+
     print("전송 완료")
-    sys.exit()
 
 def sendData_T2B(data_list,arduino):
+    global send_state
     for data in data_list:
         print(data["letter"]+'['+C_RED+data["braille"]+C_END+']', end="")  
         
@@ -87,23 +102,20 @@ def sendData_T2B(data_list,arduino):
     binary_str = ""
     for data in data_list:
         binary_str += data["data"]
-    print(binary_str)
-    print("아두이노 입력 대기 중...") 
-    print("------------------------------------------------",)
     arduino.write(binary_str.encode())
-    
-    wait = "0" 
+    print(binary_str)
+    print("------------------------------------------------",)
+    print("아두이노 입력 대기 중...") 
+
     while 1:
         if arduino.readable():
-            wait = arduino.readline()
-            wait = wait.decode()
-            if wait[0] == "q":
+            btn = arduino.readline()
+            btn = btn.decode()
+            if btn[0] == "q":
                 break
-    # while 1:
-    #     if keyboard.is_pressed('q'):
-    #         time.sleep(0.1)
-    #         break
-
+            if btn[0] == "p": 
+                send_state = False
+                break  
 
 def cho_T2B(letter):
     if letter == 'ㄱ':
