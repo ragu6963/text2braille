@@ -32,45 +32,47 @@ void setup()
 void loop()
 {
   if (digitalRead(toggle) == HIGH)
+    //if(1)
   {
+    Serial.println("serial");
     digitalWrite(port_led, HIGH);
     digitalWrite(blue_led, LOW);
-    if (Serial.available()) {
-      Serial1.end();
-      binary_input = Serial.readStringUntil('\n');
-      Serial.println(binary_input);
-      binary_input = "";
-      for (int i = 0; i < binary_input.length(); i++)
+    Serial1.end();
+    binary_input = Serial.readStringUntil('\n');
+    Serial.println(binary_input);
+    binary_input = "";
+    for (int i = 0; i < binary_input.length(); i++)
+    {
+      if (binary_input[i] != '/')
+        binary_data += binary_input[i];
+    }
+    Motor_power(binary_data);
+    while (1)
+    {
+      if (digitalRead(toggle) == LOW)
+        break;
+      if (digitalRead(btnNext) == LOW)
       {
-        if (binary_input[i] != '/')
-          binary_data += binary_input[i];
+        Serial.println("q");
+        delay(1000);
+        Motor_off();
+        //delay(3000);
+        break;
       }
-      Motor_power(binary_data);
-      while (1)
+      if (digitalRead(btnCap) == LOW)
       {
-        if (digitalRead(toggle) == LOW)
-          break;
-        if (digitalRead(btnNext) == LOW)
-        {
-          Serial.println("q");
-          delay(1000);
-          Motor_off();
-          //delay(3000);
-          break;
-        }
-        if (digitalRead(btnCap) == LOW)
-        {
-          Serial.println("p");
-          delay(1000);
-          Motor_off();
-          //delay(3000);
-          break;
-        }
+        Serial.println("p");
+        delay(1000);
+        Motor_off();
+        //delay(3000);
+        break;
       }
     }
   }
   if (digitalRead(toggle) == LOW)
+    //if(0)
   {
+    Serial.println("blue");
     digitalWrite(port_led, LOW);
     digitalWrite(blue_led, HIGH);
     Serial1.begin(9600);

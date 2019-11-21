@@ -1,8 +1,8 @@
 import time 
 import serial  
-from Image2Text2 import * 
+from Image2Text import * 
 
-arduino = serial.Serial("COM3", 9600)
+arduino = serial.Serial("COM5", 9600)
 print("초기화 중")
 time.sleep(1.5) 
 
