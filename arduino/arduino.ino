@@ -32,52 +32,57 @@ void setup()
 void loop()
 {
   if (digitalRead(toggle) == HIGH)
-    //if(1)
   {
-    Serial.println("serial");
+    //    Serial.println("serial");
     digitalWrite(port_led, HIGH);
     digitalWrite(blue_led, LOW);
     Serial1.end();
-    binary_input = Serial.readStringUntil('\n');
-    Serial.println(binary_input);
-    binary_input = "";
-    for (int i = 0; i < binary_input.length(); i++)
+    if (digitalRead(btnCap) == LOW)
     {
-      if (binary_input[i] != '/')
-        binary_data += binary_input[i];
+      Serial.println("p"); 
+      delay(3000);
     }
-    Motor_power(binary_data);
-    while (1)
-    {
-      if (digitalRead(toggle) == LOW)
-        break;
-      if (digitalRead(btnNext) == LOW)
+    if (Serial.available()) {
+      binary_input = "";
+      binary_data = "";
+      binary_input = Serial.readStringUntil('\n');
+      Serial.println(binary_input);
+      for (int i = 0; i < binary_input.length(); i++)
       {
-        Serial.println("q");
-        delay(1000);
-        Motor_off();
-        //delay(3000);
-        break;
+        if (binary_input[i] != '/')
+          binary_data += binary_input[i];
       }
-      if (digitalRead(btnCap) == LOW)
+      Motor_power(binary_data);
+      while (1)
       {
-        Serial.println("p");
-        delay(1000);
-        Motor_off();
-        //delay(3000);
-        break;
+        if (digitalRead(toggle) == LOW)
+          break;
+        if (digitalRead(btnNext) == LOW)
+        {
+          Serial.println("q");
+          Motor_off();
+          delay(1000);
+          //delay(3000);
+          break;
+        }
+        if (digitalRead(btnCap) == LOW)
+        {
+          Serial.println("p");
+          break;
+        }
       }
     }
   }
   if (digitalRead(toggle) == LOW)
-    //if(0)
   {
-    Serial.println("blue");
     digitalWrite(port_led, LOW);
     digitalWrite(blue_led, HIGH);
     Serial1.begin(9600);
+    delay(1000);
+
     if (Serial1.available())
     {
+      binary_input = "";
       binary_input = Serial1.readStringUntil('\n');
       Serial.println(binary_input);
       if (!binary_input.compareTo("Q\r"))
@@ -103,9 +108,10 @@ void loop()
           {
             Serial1.print("q\r\n");
             Motor_off();
-            delay(1500);
+            delay(3000);
             break;
           }
+
         }
       }
     }

@@ -1,33 +1,32 @@
 # 이미지에서 텍스트 추출(OCR) 
 import cv2
 import numpy as np
-import pytesseract
-import keyboard
+import pytesseract 
 import time
 import sys
-import threading
-import serial
+import threading 
 import pyautogui  
 from Text2Braille import *  
 
 src = [] 
 
 def nothing(x):
-    pass
+    pass 
+
 
 def btn_detect_I2T(arduino):    
-    print("start detect capture button")
+    print("start detect capture button") 
     while 1:
         if arduino.readable():
             btn = arduino.readline()
             btn = btn.decode()
-            if btn[0] == "p":
+            if btn[0] == 'p':
                 print("Capture")
-                pyautogui.press("p")    
-                sys.exit() 
-
+                pyautogui.press("p")  
+                sys.exit()
 
 def img_OCR(image,arduino):
+    print("ocr 시작")
     gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 
     GaussianBlur = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -44,10 +43,9 @@ def img_OCR(image,arduino):
     cv2.waitKey(1)  
     
     # config = ('-l Hangul --oem 1 --psm 3')
-    # config = ('-l kor --oem 1 --psm 3')
+    config = ('-l kor --oem 1 --psm 3')
     # config = ('-l kor + eng --oem 1 --psm 3')
-    config = ('-l eng --oem 1 --psm 3')
-
+    # config = ('-l eng --oem 1 --psm 3')
 
     text = pytesseract.image_to_string(erode,config=config)
 
@@ -74,7 +72,7 @@ def mouse_handler(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         if(len(src) == 4):
             pass
-        else:
+        else:p
             src.append([x, y]) 
     if event == cv2.EVENT_RBUTTONUP:
         src = []
@@ -87,13 +85,12 @@ def video_cap_I2T(arduino):
     cap = cv2.VideoCapture(cv2.CAP_DSHOW)   
     codec = cv2.VideoWriter_fourcc(	'M', 'J', 'P', 'G'	)
     cap.set(6, codec)
-    cap.set(5, 30)
+    cap.set(5, 15)
     cap.set(3, 1920)
-    cap.set(4, 1080)
-
-    btn_detect_th = threading.Thread(target = btn_detect_I2T, name="btn_detect_I2T",args=(arduino,))
-    btn_detect_th.daemon = True
-    btn_detect_th.start()
+    cap.set(4, 1080) 
+    
+    
+    
 
     while 1:    
         ret, video = cap.read()  

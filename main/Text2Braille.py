@@ -96,17 +96,19 @@ def send_T2B(braille_list,arduino):
 def sendData_T2B(data_list,arduino):
     global send_state
     for data in data_list:
-        print(data["letter"]+'['+C_RED+data["braille"]+C_END+']', end="")  
-        
+        print(data["letter"]+'['+C_RED+data["braille"]+C_END+']', end="")   
     print("\n",end="")
+
     binary_str = ""
     for data in data_list:
         binary_str += data["data"]
+
     arduino.write(binary_str.encode())
+
     print(binary_str)
     print("------------------------------------------------",)
     print("아두이노 입력 대기 중...") 
-
+    
     while 1:
         if arduino.readable():
             btn = arduino.readline()
