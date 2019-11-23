@@ -61,8 +61,7 @@ void loop()
         {
           Serial.println("q");
           Motor_off();
-          delay(1000);
-          //delay(3000);
+          delay(1500); 
           break;
         }
         if (digitalRead(btnCap) == LOW)
@@ -108,7 +107,7 @@ void loop()
           {
             Serial1.print("q\r\n");
             Motor_off();
-            delay(3000);
+            delay(1500);
             break;
           }
 

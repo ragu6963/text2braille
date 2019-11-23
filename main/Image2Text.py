@@ -8,6 +8,9 @@ import threading
 import pyautogui  
 from Text2Braille import *  
 
+C_BOLD  = "\033[1m"
+C_RED   = "\033[31m"
+C_END   = "\033[0m"
 src = [] 
 
 def nothing(x):
@@ -48,8 +51,8 @@ def img_OCR(image,arduino):
     # config = ('-l eng --oem 1 --psm 3')
 
     text = pytesseract.image_to_string(erode,config=config)
+    print(C_RED+text+C_END)   
 
-    print(text)
     print("데이터 변환 중...")
     text_list = text.split() 
     braille_list = convert_T2B(text_list) 
@@ -72,7 +75,7 @@ def mouse_handler(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         if(len(src) == 4):
             pass
-        else:p
+        else:
             src.append([x, y]) 
     if event == cv2.EVENT_RBUTTONUP:
         src = []
@@ -87,10 +90,7 @@ def video_cap_I2T(arduino):
     cap.set(6, codec)
     cap.set(5, 15)
     cap.set(3, 1920)
-    cap.set(4, 1080) 
-    
-    
-    
+    cap.set(4, 1080)  
 
     while 1:    
         ret, video = cap.read()  
